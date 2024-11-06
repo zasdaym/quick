@@ -191,7 +191,6 @@ OPTIONS:
 `, os.Args[0])
 		flag.CommandLine.PrintDefaults()
 	}
-
 }
 
 // for developer
@@ -339,10 +338,9 @@ func checkArgs() error {
 }
 
 func dialWithTimeout(network, addr string, tlsCfg *tls.Config,
-	cfg *quic.Config) (quic.Session, error) {
-
-	ctx, cancel :=
-		context.WithTimeout(context.Background(), config.connectTimeout)
+	cfg *quic.Config,
+) (quic.Session, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), config.connectTimeout)
 	defer cancel()
 
 	done := make(chan struct{})
@@ -425,6 +423,7 @@ func createCookieManager() (CookieManager, error) {
 func createClient(cm CookieManager) (*http.Client, error) {
 	quicConf := &quic.Config{
 		IdleTimeout: config.idleTimeout,
+		Versions:    []quic.VersionNumber{quic.VersionGQUIC43},
 	}
 	tlsConf := &tls.Config{
 		InsecureSkipVerify: config.insecure,
